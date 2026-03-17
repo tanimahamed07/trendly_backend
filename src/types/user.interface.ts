@@ -4,4 +4,6 @@ export interface TUser {
   password?: string;
   role: 'user' | 'admin' | 'manager';
   avatar: string;
+  createdAt?: Date; 
+  updatedAt?: Date;  
 }

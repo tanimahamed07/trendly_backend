@@ -125,10 +125,11 @@ const getProductById = async (req: Request, res: Response) => {
 
 // Update product
 const updateProduct = async (req: Request, res: Response) => {
+  const { rating, ratingCount, createdBy, ...updateData } = req.body;
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true, runValidators: true },
     );
     if (!updatedProduct) {

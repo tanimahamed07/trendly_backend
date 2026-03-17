@@ -2,7 +2,7 @@
 
 import { Types } from "mongoose";
 
-export interface TBooking {
+export interface TOrder {
   userId: Types.ObjectId;
   itemId: Types.ObjectId;
   quantity: number;
@@ -15,4 +15,7 @@ export interface TBooking {
     phone: string;
     address: string;
   };
+  deliveredAt?: Date;
+  cancelledAt?: Date;
+  paidAt?: Date;
 }

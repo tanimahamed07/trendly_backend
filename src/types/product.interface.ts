@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 
 export interface TProduct {
   title: string;
@@ -17,5 +17,7 @@ export interface TProduct {
   stock: number;
   isActive: boolean;
   tags: string[];
-  createdBy: ObjectId;
+  createdBy: Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
