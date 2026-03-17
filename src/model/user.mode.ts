@@ -15,12 +15,12 @@ const userSchema = new Schema<TUser>(
 );
 
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
 
   const user = this; 
 
   if (!user.isModified('password')) {
-    return next();
+    return;
   }
 
   user.password = await bcrypt.hash(
@@ -28,7 +28,6 @@ userSchema.pre('save', async function (next) {
     Number(config.bcrypt_salt_rounds)
   );
   
-  next();
 });
 
 // Post-save: মঙ্গুস ৯-এ post হুক সাধারণত synchronous হয় এবং next লাগে না

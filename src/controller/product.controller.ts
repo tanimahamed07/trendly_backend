@@ -3,11 +3,11 @@ import { Product } from "../model/product.model";
 
 const createProduct = async (req: Request, res: Response) => {
   try {
-    const createProduct = await Product.create(req.body);
+    const newProduct = await Product.create(req.body);
     res.status(201).json({
       success: true,
       message: "product created successfully",
-      data: createProduct,
+      data: newProduct,
     });
   } catch (err: any) {
     res.status(500).json({
@@ -20,11 +20,76 @@ const createProduct = async (req: Request, res: Response) => {
 
 const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find();
+    const {
+      search,
+      category,
+      priceMin,
+      priceMax,
+      rating,
+      sort,
+      page = "1",
+      limit = "10",
+    } = req.query;
+
+    // ✅ Filter object build করো
+    const filter: Record<string, any> = { isActive: true };
+
+    // Search — title, description, category তে
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Category filter
+    if (category) {
+      filter.category = category;
+    }
+
+    // Price range filter
+    if (priceMin || priceMax) {
+      filter.price = {};
+      if (priceMin) filter.price.$gte = Number(priceMin);
+      if (priceMax) filter.price.$lte = Number(priceMax);
+    }
+
+    // Rating filter
+    if (rating) {
+      filter.rating = { $gte: Number(rating) };
+    }
+
+    // ✅ Sort build করো
+    let sortOption: Record<string, 1 | -1> = { createdAt: -1 }; // default
+    if (sort) {
+      const sortField = (sort as string).startsWith("-")
+        ? (sort as string).slice(1)
+        : (sort as string);
+      const sortOrder = (sort as string).startsWith("-") ? -1 : 1;
+      sortOption = { [sortField]: sortOrder };
+    }
+
+    // ✅ Pagination
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await Product.countDocuments(filter);
+    const products = await Product.find(filter)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limitNum);
+
     res.status(200).json({
       success: true,
       message: "Products fetched successfully",
       data: products,
+      meta: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+      },
     });
   } catch (err: any) {
     res.status(500).json({
