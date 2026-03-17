@@ -122,3 +122,21 @@ export const userControllers = {
   login,
   getUsers,
 };
+
+
+
+// ## Query examples যেগুলো এখন কাজ করবে
+// ```
+// GET /api/items?search=phone
+// GET /api/items?category=electronics
+// GET /api/items?priceMin=10&priceMax=100
+// GET /api/items?rating=4
+// GET /api/items?sort=price        → price low to high
+// GET /api/items?sort=-rating      → rating high to low
+// GET /api/items?sort=-createdAt   → newest first
+// GET /api/items?page=2&limit=10
+// ```
+
+// এগুলো সব একসাথেও কাজ করবে:
+// ```
+// GET /api/items?search=phone&category=electronics&priceMin=50&sort=-rating&page=1&limit=10
