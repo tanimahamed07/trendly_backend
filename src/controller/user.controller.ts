@@ -99,6 +99,41 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
+const refreshToken = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token is required',
+      });
+    }
+
+    const decoded = jwt.verify(token, config.jwt_secret as Secret) as {
+      email: string;
+      role: string;
+    };
+
+    const newToken = jwt.sign(
+      { email: decoded.email, role: decoded.role },
+      config.jwt_secret as Secret,
+      { expiresIn: config.jwt_expires_in as any }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Token refreshed successfully',
+      token: newToken,
+    });
+  } catch (err: any) {
+    res.status(401).json({
+      success: false,
+      message: 'Invalid or expired token',
+      error: err.message,
+    });
+  }
+};
+
 // Get all users
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -117,10 +152,135 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+// Get user by ID
+const getUserById = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'User fetched successfully',
+      data: user,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user',
+      error: err.message,
+    });
+  }
+};
+
+// Update user
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    // password direct update করতে দেওয়া যাবে না
+    const { password, role, ...updateData } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully',
+      data: updatedUser,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update user',
+      error: err.message,
+    });
+  }
+};
+
+// Delete user
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully',
+      data: null,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete user',
+      error: err.message,
+    });
+  }
+};
+
+// Update user role (admin only)
+const updateUserRole = async (req: Request, res: Response) => {
+  try {
+    const { userId, role } = req.body;
+
+    if (!['user', 'manager', 'admin'].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role',
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { role },
+      { new: true }
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User role updated successfully',
+      data: updatedUser,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update user role',
+      error: err.message,
+    });
+  }
+};
+
 export const userControllers = {
   register,
   login,
+  refreshToken,
   getUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  updateUserRole,
 };
 
 
