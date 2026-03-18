@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: trendly-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: BCRYPT_SALT_ROUNDS
+        value: 12
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: GEMINI_API_KEY
+        sync: false
