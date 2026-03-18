@@ -12,8 +12,8 @@ router.post('/refresh-token', userControllers.refreshToken);
 // User routes
 router.get('/', userControllers.getUsers);
 router.get('/:id', userControllers.getUserById);
+router.patch('/role', userControllers.updateUserRole);  // Moved above /:id to prevent conflict
 router.patch('/:id', userControllers.updateUser);
 router.delete('/:id', userControllers.deleteUser);
-router.patch('/role', userControllers.updateUserRole);  // ⚠️ নিচে দেখো
 
 export const UserRoutes = router;

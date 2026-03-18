@@ -10,7 +10,7 @@ const createBooking = async (req: Request, res: Response) => {
 
     const newBooking = await Order.create({
       ...bookingData,
-      userId: req.user._id, 
+      userId: req.user._id,
     });
 
     res.status(201).json({
@@ -83,17 +83,29 @@ const getBookings = async (req: Request, res: Response) => {
 const updateBooking = async (req: Request, res: Response) => {
   try {
     // Sensitive fields বাদ দাও
-    const { userId, itemId, price, ...updateData } = req.body;
+    const { userId, itemId, price, trackingNumber, status, paymentStatus, ...restUpdateData } = req.body;
 
     // Status অনুযায়ী timestamp set করো
-    if (updateData.status === "delivered") {
-      updateData.deliveredAt = new Date();
+    const updateData: any = { ...restUpdateData };
+
+    if (status) {
+      updateData.status = status;
+      if (status === "delivered") {
+        updateData.deliveredAt = new Date();
+      } else if (status === "cancelled") {
+        updateData.cancelledAt = new Date();
+      }
     }
-    if (updateData.status === "cancelled") {
-      updateData.cancelledAt = new Date();
+
+    if (paymentStatus) {
+      updateData.paymentStatus = paymentStatus;
+      if (paymentStatus === "paid") {
+        updateData.paidAt = new Date();
+      }
     }
-    if (updateData.paymentStatus === "paid") {
-      updateData.paidAt = new Date();
+
+    if (trackingNumber !== undefined) {
+      updateData.trackingNumber = trackingNumber;
     }
 
     const updatedBooking = await Order.findByIdAndUpdate(
