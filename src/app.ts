@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
+import { AuthRoutes } from "./routes/auth.routes";
 import { UserRoutes } from "./routes/user.routes";
 import { ProductRoutes } from "./routes/product.routes";
 import { bookingRoutes } from "./routes/booking.routes";
@@ -12,10 +13,10 @@ const app: Application = express();
 app.use(express.json());
 app.use(cors());
 
-// Auth routes
-app.use("/api/auth", UserRoutes);
+// Auth routes (register, login, refresh-token only)
+app.use("/api/auth", AuthRoutes);
 
-// User routes
+// User management routes (CRUD only)
 app.use("/api/users", UserRoutes);
 
 // Product/Items routes
