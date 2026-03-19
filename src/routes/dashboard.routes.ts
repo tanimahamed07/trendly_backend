@@ -7,14 +7,14 @@ const router = express.Router();
 // Get dashboard statistics (admin/manager only)
 router.get(
   "/stats",
-  auth("admin", "manager"),
+  auth("admin"),
   dashboardControllers.getDashboardStats,
 );
 
 // Get chart data (admin/manager only)
 router.get(
   "/chart-data",
-  auth("admin", "manager"),
+  auth("admin"),
   dashboardControllers.getChartData,
 );
 

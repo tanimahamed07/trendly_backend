@@ -19,7 +19,7 @@ export const auth = (...roles: string[]) => {
       const decoded = jwt.verify(token, config.jwt_secret as Secret) as {
         _id: string;
         email: string;
-        role: "user" | "admin" | "manager";
+        role: "user" | "admin";
       };
 
       // Role check করো

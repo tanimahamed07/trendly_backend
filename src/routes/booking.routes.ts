@@ -9,21 +9,21 @@ const router = express.Router();
 // POST /api/bookings
 router.post(
   "/",
-  auth("user", "admin", "manager"),
+  auth("user", "admin"),
   bookingControllers.createBooking,
 );
 
 // GET /api/bookings
 router.get(
   "/",
-  auth("user", "admin", "manager"),
+  auth("user", "admin"),
   bookingControllers.getBookings,
 );
 
 // PATCH /api/bookings/:id
 router.patch(
   "/:id",
-  auth("admin", "manager"),
+  auth("admin"),
   bookingControllers.updateBooking,
 );
 

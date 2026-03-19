@@ -2,8 +2,8 @@ export interface TUser {
   name: string;
   email: string;
   password?: string;
-  role: 'user' | 'admin' | 'manager';
+  role: 'user' | 'admin';
   avatar: string;
-  createdAt?: Date; 
-  updatedAt?: Date;  
+  createdAt?: Date;
+  updatedAt?: Date;
 }

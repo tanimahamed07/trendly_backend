@@ -7,7 +7,7 @@ const router = express.Router();
 // Create review (authenticated users only)
 router.post(
   "/",
-  auth("user", "admin", "manager"),
+  auth("user", "admin"),
   reviewControllers.createReview,
 );
 
