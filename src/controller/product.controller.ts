@@ -27,12 +27,18 @@ const getProducts = async (req: Request, res: Response) => {
       priceMax,
       rating,
       sort,
+      isTrending,
       page = "1",
       limit = "10",
     } = req.query;
 
     // ✅ Filter object build করো
     const filter: Record<string, any> = { isActive: true };
+
+    // isTrending filter
+    if (isTrending === "true") {
+      filter.isTrending = true;
+    }
 
     // Search — title, description, category তে
     if (search) {
@@ -45,7 +51,7 @@ const getProducts = async (req: Request, res: Response) => {
 
     // Category filter
     if (category) {
-      filter.category = category;
+      filter.category = { $regex: `^${category}$`, $options: "i" };
     }
 
     // Price range filter

@@ -18,6 +18,7 @@ const productSchema = new Schema<TProduct>(
     sku: { type: String, required: true, unique: true },
     stock: { type: Number, required: true, default: 0 },
     isActive: { type: Boolean, default: true },
+    isTrending: { type: Boolean, default: false },
     tags: [{ type: String }],
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },

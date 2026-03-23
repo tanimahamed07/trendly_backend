@@ -9,9 +9,7 @@ const register = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
 
-    // Check if user already exists
     const isUserExist = await User.findOne({ email });
-
     if (isUserExist) {
       return res.status(400).json({
         success: false,
@@ -21,14 +19,12 @@ const register = async (req: Request, res: Response) => {
 
     const savedUser = await User.create(req.body);
 
-    // Generate token
     const token = jwt.sign(
       { _id: savedUser._id, email: savedUser.email, role: savedUser.role },
       config.jwt_secret as Secret,
       { expiresIn: config.jwt_expires_in as any },
     );
 
-    // Omit password from response
     const userResponse = savedUser.toObject();
     delete userResponse.password;
 
@@ -52,7 +48,6 @@ const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(401).json({
@@ -61,7 +56,6 @@ const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Compare passwords
     const isPasswordMatch = await bcrypt.compare(
       password,
       user.password as string,
@@ -73,14 +67,13 @@ const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Generate token
+    // ✅ Fix: _id যোগ করা হয়েছে
     const token = jwt.sign(
-      { email: user.email, role: user.role },
+      { _id: user._id, email: user.email, role: user.role },
       config.jwt_secret as Secret,
       { expiresIn: config.jwt_expires_in as any },
     );
 
-    // Omit password from response
     const userResponse = user.toObject();
     delete userResponse.password;
 
@@ -109,13 +102,16 @@ const refreshToken = async (req: Request, res: Response) => {
       });
     }
 
+    // ✅ Fix: decoded type এ _id যোগ করা হয়েছে
     const decoded = jwt.verify(token, config.jwt_secret as Secret) as {
+      _id: string;
       email: string;
       role: string;
     };
 
+    // ✅ Fix: নতুন token এও _id রাখা হয়েছে
     const newToken = jwt.sign(
-      { email: decoded.email, role: decoded.role },
+      { _id: decoded._id, email: decoded.email, role: decoded.role },
       config.jwt_secret as Secret,
       { expiresIn: config.jwt_expires_in as any },
     );
@@ -179,7 +175,6 @@ const getUserById = async (req: Request, res: Response) => {
 // Update user
 const updateUser = async (req: Request, res: Response) => {
   try {
-    // password direct update করতে দেওয়া যাবে না
     const { password, role, ...updateData } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -282,19 +277,3 @@ export const userControllers = {
   deleteUser,
   updateUserRole,
 };
-
-// ## Query examples যেগুলো এখন কাজ করবে
-// ```
-// GET /api/items?search=phone
-// GET /api/items?category=electronics
-// GET /api/items?priceMin=10&priceMax=100
-// GET /api/items?rating=4
-// GET /api/items?sort=price        → price low to high
-// GET /api/items?sort=-rating      → rating high to low
-// GET /api/items?sort=-createdAt   → newest first
-// GET /api/items?page=2&limit=10
-// ```
-
-// এগুলো সব একসাথেও কাজ করবে:
-// ```
-// GET /api/items?search=phone&category=electronics&priceMin=50&sort=-rating&page=1&limit=10

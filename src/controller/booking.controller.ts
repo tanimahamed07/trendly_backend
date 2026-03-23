@@ -34,7 +34,7 @@ const getBookings = async (req: Request, res: Response) => {
 
     const filter: Record<string, any> = {};
 
-    // Admin/Manager সব দেখবে, User শুধু নিজেরটা
+    // Admin সব দেখবে, User শুধু নিজেরটা
     if (req.user.role === "user") {
       filter.userId = req.user._id;
     }

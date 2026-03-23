@@ -16,6 +16,7 @@ export interface TProduct {
   sku: string;
   stock: number;
   isActive: boolean;
+  isTrending: boolean;
   tags: string[];
   createdBy: Types.ObjectId;
   createdAt?: Date;

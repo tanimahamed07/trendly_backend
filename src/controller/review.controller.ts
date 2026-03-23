@@ -5,6 +5,8 @@ import { Product } from "../model/product.model";
 // Create review
 const createReview = async (req: Request, res: Response) => {
   try {
+    console.log("req.user →", req.user);
+    console.log("req.body →", req.body);
     const { itemId, rating, comment } = req.body;
 
     // Check if product exists

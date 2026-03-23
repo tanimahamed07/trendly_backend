@@ -4,14 +4,14 @@ import { auth } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
-// Get dashboard statistics (admin/manager only)
+// Get dashboard statistics (admin only)
 router.get(
   "/stats",
   auth("admin"),
   dashboardControllers.getDashboardStats,
 );
 
-// Get chart data (admin/manager only)
+// Get chart data (admin only)
 router.get(
   "/chart-data",
   auth("admin"),
