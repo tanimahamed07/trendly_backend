@@ -3,13 +3,20 @@ import { Product } from "../model/product.model";
 
 const createProduct = async (req: Request, res: Response) => {
   try {
-    const newProduct = await Product.create(req.body);
+    const user = (req as any).user; // auth middleware থেকে
+
+    const newProduct = await Product.create({
+      ...req.body,
+      createdBy: user._id, // 👈 ADD THIS
+    });
+
     res.status(201).json({
       success: true,
       message: "product created successfully",
       data: newProduct,
     });
   } catch (err: any) {
+    console.log(err); // 👈 debug
     res.status(500).json({
       success: false,
       message: "Failed to create product",

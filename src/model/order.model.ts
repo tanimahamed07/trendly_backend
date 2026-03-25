@@ -2,7 +2,6 @@
 import { Schema, model } from "mongoose";
 import { TOrder } from "../types/order.interface";
 
-
 const bookingSchema = new Schema<TOrder>(
   {
     userId: {

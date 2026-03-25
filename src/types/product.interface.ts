@@ -3,9 +3,8 @@ import { Types } from "mongoose";
 export interface TProduct {
   title: string;
   description: string;
-  shortDescription: string;
   image: string;
-  images: string[];
+
   price: number;
   compareAtPrice: number;
   currency: string;

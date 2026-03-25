@@ -135,9 +135,44 @@ const deleteReview = async (req: Request, res: Response) => {
     });
   }
 };
+const getMyReviews = async (req: Request, res: Response) => {
+  try {
+    const { page = "1", limit = "10" } = req.query;
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const filter = { userId: req.user._id };
+
+    const total = await Review.countDocuments(filter);
+    const reviews = await Review.find(filter)
+      .populate("itemId", "title image price category") // প্রোডাক্টের নাম ও ছবি দেখানোর জন্য
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    res.status(200).json({
+      success: true,
+      message: "My reviews fetched successfully",
+      data: reviews,
+      meta: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+      },
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch your reviews",
+      error: err.message,
+    });
+  }
+};
 
 export const reviewControllers = {
   createReview,
   getReviewsByItem,
   deleteReview,
+  getMyReviews,
 };

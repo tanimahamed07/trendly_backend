@@ -4,17 +4,20 @@ import { auth } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
-// Create review (authenticated users only)
-router.post(
-  "/",
-  auth("user", "admin"),
-  reviewControllers.createReview,
+// ১. নিজের সব রিভিউ দেখা (এটি উপরে রাখতে হবে)
+router.get(
+  "/my-reviews",
+  auth("user", "admin"), // লগইন করা ইউজার বা এডমিন
+  reviewControllers.getMyReviews,
 );
 
-// Get reviews by item ID (public)
+// ২. রিভিউ তৈরি করা
+router.post("/", auth("user", "admin"), reviewControllers.createReview);
+
+// ৩. প্রোডাক্ট আইডি দিয়ে রিভিউ দেখা
 router.get("/item/:itemId", reviewControllers.getReviewsByItem);
 
-// Delete review (admin or review owner)
-router.delete("/:id", auth("admin"), reviewControllers.deleteReview);
+// ৪. রিভিউ ডিলিট করা
+router.delete("/:id", auth("user", "admin"), reviewControllers.deleteReview);
 
 export const reviewRoutes = router;
